@@ -52,7 +52,7 @@ services:
     name: expense-tracker-frontend
     env: static
     buildCommand: "npm install && npm run build"
-    publishPath: dist
+    publishDir: dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
