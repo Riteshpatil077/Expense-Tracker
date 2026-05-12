@@ -93,10 +93,4 @@ EMAIL_HOST_PASSWORD=your_app_password
 
 ---
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
 Developed with ❤️ by [Ritesh](https://github.com/yourusername)
