@@ -1,0 +1,66 @@
+services:
+  # Backend Web Service (Django)
+  - type: web
+    name: expense-tracker-backend
+    env: python
+    buildCommand: "./render_build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    rootDirectory: backend
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: expense-tracker-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: expense-tracker-redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*" # Update with your Render URL later
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://expense-tracker-frontend.onrender.com" # Update with your frontend URL
+
+  # Celery Worker
+  - type: worker
+    name: expense-tracker-worker
+    env: python
+    buildCommand: "./render_build.sh"
+    startCommand: "celery -A config worker --loglevel=info"
+    rootDirectory: backend
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: expense-tracker-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: expense-tracker-redis
+          property: connectionString
+
+  # Frontend Static Site (React)
+  - type: static
+    name: expense-tracker-frontend
+    env: static
+    buildCommand: "npm install && npm run build"
+    publishPath: dist
+    rootDirectory: frontend
+    envVars:
+      - key: VITE_API_URL
+        value: "https://expense-tracker-backend.onrender.com"
+
+# Postgres Database
+databases:
+  - name: expense-tracker-db
+    plan: free
+
+# Redis Instance
+- type: redis
+  name: expense-tracker-redis
+  plan: free
+  ipAllowList: [] # Only allow internal connections
