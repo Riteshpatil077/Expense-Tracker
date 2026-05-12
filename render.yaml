@@ -5,7 +5,7 @@ services:
     env: python
     buildCommand: "./render_build.sh"
     startCommand: "gunicorn config.wsgi:application"
-    rootDirectory: backend
+    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -33,7 +33,7 @@ services:
     env: python
     buildCommand: "./render_build.sh"
     startCommand: "celery -A config worker --loglevel=info"
-    rootDirectory: backend
+    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -53,7 +53,7 @@ services:
     env: static
     buildCommand: "npm install && npm run build"
     publishPath: dist
-    rootDirectory: frontend
+    rootDir: frontend
     envVars:
       - key: VITE_API_URL
         value: "https://expense-tracker-backend.onrender.com"
