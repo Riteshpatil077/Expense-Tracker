@@ -54,13 +54,13 @@ services:
       - key: VITE_API_URL
         value: "https://expense-tracker-backend.onrender.com"
 
+  # Redis Instance
+  - type: redis
+    name: expense-tracker-redis
+    plan: free
+    ipAllowList: [] # Only allow internal connections
+
 # Postgres Database
 databases:
   - name: expense-tracker-db
     plan: free
-
-# Redis Instance
-- type: redis
-  name: expense-tracker-redis
-  plan: free
-  ipAllowList: [] # Only allow internal connections
