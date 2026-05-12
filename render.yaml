@@ -44,7 +44,7 @@ services:
           property: connectionString
 
   # Frontend Static Site (React)
-  - type: static
+  - type: web
     name: expense-tracker-frontend
     env: static
     buildCommand: "npm install && npm run build"
