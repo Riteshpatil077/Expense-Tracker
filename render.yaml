@@ -3,9 +3,9 @@ services:
   - type: web
     name: expense-tracker-backend
     env: python
+    rootDir: backend
     buildCommand: "./render_build.sh"
     startCommand: "gunicorn config.wsgi:application"
-    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -21,19 +21,19 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "*" # Update with your Render URL later
+        value: "*"
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://expense-tracker-frontend.onrender.com" # Update with your frontend URL
+        value: "https://expense-tracker-frontend.onrender.com"
       - key: PYTHON_VERSION
-        value: "3.10.12" # Specify your python version
+        value: "3.10.12"
 
   # Celery Worker
   - type: worker
     name: expense-tracker-worker
     env: python
+    rootDir: backend
     buildCommand: "./render_build.sh"
     startCommand: "celery -A config worker --loglevel=info"
-    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -51,18 +51,18 @@ services:
   - type: web
     name: expense-tracker-frontend
     env: static
+    rootDir: frontend
     buildCommand: "npm install && npm run build"
     publishDir: dist
-    rootDir: frontend
     envVars:
       - key: VITE_API_URL
         value: "https://expense-tracker-backend.onrender.com"
 
-  # Redis Instance
+  # Managed Redis
   - type: redis
     name: expense-tracker-redis
     plan: free
-    ipAllowList: [] # Only allow internal connections
+    ipAllowList: []
 
 # Postgres Database
 databases:
