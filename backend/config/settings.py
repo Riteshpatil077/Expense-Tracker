@@ -13,6 +13,12 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
+# Auto-add Vercel deployment URL to ALLOWED_HOSTS
+import os
+VERCEL_URL = os.environ.get('VERCEL_URL')
+if VERCEL_URL:
+    ALLOWED_HOSTS.append(VERCEL_URL)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,8 +29,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'django_celery_results',
-    'django_celery_beat',
+    # Celery apps disabled on Vercel (serverless - no background workers)
+    # 'django_celery_results',
+    # 'django_celery_beat',
     'apps.users',
     'apps.transactions',
     'apps.reports',
@@ -85,6 +92,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -108,11 +116,13 @@ CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
 CORS_ALLOW_CREDENTIALS = True
 
-CELERY_BROKER_URL = config('REDIS_URL', default='redis://redis:6379/0')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_EXTENDED = True
+# Celery — only active when REDIS_URL is available (disabled on Vercel serverless)
+if config('REDIS_URL', default=''):
+    CELERY_BROKER_URL = config('REDIS_URL')
+    CELERY_RESULT_BACKEND = 'django-db'
+    CELERY_ACCEPT_CONTENT = ['json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_EXTENDED = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
